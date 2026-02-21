@@ -56,8 +56,8 @@ resource "aws_security_group" "eks_nodes" {
   # Allow nodes to talk to each other
   ingress {
     from_port   = 0
-    to_port     = 65535
-    protocol    = "-1"
+    to_port     = 0
+    protocol    = "ALL"
     self        = true
   }
 
@@ -65,7 +65,7 @@ resource "aws_security_group" "eks_nodes" {
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1"
+    protocol    = "ALL"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
