@@ -38,7 +38,7 @@ resource "aws_db_instance" "postgres" {
 resource "aws_db_instance" "replica" {
   count               = var.environment == "prod" && var.db_engine == "rds" ? 1 : 0
   engine              = "postgres"
-  instance_class      = "db.m5.large"
+  instance_class      = "db.t3.medium"
   replicate_source_db = aws_db_instance.postgres[0].id
   publicly_accessible = false
   vpc_security_group_ids = var.security_group_ids

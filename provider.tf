@@ -9,12 +9,12 @@ terraform {
       version = "6.33.0"
     }
   }
-  
+
   backend "s3" {
     region         = "eu-central-1"
-    bucket         = "terraform-state-imilosevic"   
-    key            = "prod/terraform.tfstate"    
+    bucket         = "terraform-state-imilosevic"
+    key            = "prod/terraform.tfstate"
     encrypt        = true
-    dynamodb_table = "terraform-lock-imilosevic-prod"             
+    dynamodb_table = "terraform-lock-imilosevic-prod"
   }
 }

@@ -20,10 +20,10 @@ module "eks" {
 
 module "database" {
   source             = "./modules/database"
-  db_engine          = "rds"        # or "aurora"
-  environment        = "prod"       
-  db_username        = "admin"
-  db_password        = "supersecret"
+  db_engine          = "rds" # or "aurora"
+  environment        = "prod"
+  db_username        = data.aws_ssm_parameter.dbuser.value
+  db_password        = data.aws_ssm_parameter.dbpassword.value
   subnet_group_name  = module.vpc.db_subnet_group
   security_group_ids = [module.eks.sg_id]
 }
