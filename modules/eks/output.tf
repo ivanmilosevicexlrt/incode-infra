@@ -2,6 +2,11 @@ output "cluster_id" {
   value = aws_eks_cluster.this.id
 }
 
+output "sg_id" {
+  description = "Security group ID for EKS worker nodes"
+  value       = aws_security_group.eks_nodes.id
+}
+
 output "cluster_endpoint" {
   value = aws_eks_cluster.this.endpoint
 }

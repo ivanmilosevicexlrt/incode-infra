@@ -31,6 +31,15 @@ resource "aws_subnet" "db" {
   }
 }
 
+resource "aws_db_subnet_group" "this" {
+  name       = "${var.name}-db-subnet-group"
+  subnet_ids = aws_subnet.db[*].id
+
+  tags = {
+    Name = "${var.name}-db-subnet-group"
+  }
+}
+
 resource "aws_subnet" "monitoring" {
   count             = var.enable_monitoring ? var.az_count : 0
   vpc_id            = aws_vpc.this.id

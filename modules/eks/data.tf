@@ -19,3 +19,7 @@ data "aws_iam_policy_document" "eks_cluster_assume" {
     }
   }
 }
+
+data "aws_subnet" "first" {
+  id = var.subnet_ids[0]
+}

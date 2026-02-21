@@ -47,3 +47,30 @@ resource "aws_eks_node_group" "default" {
   }
   instance_types = [var.node_instance_type]
 }
+
+resource "aws_security_group" "eks_nodes" {
+  name        = "${var.cluster_name}-eks-nodes-sg"
+  description = "Security group for EKS worker nodes"
+  vpc_id      = data.aws_subnet.first.vpc_id  
+
+  # Allow nodes to talk to each other
+  ingress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "-1"
+    self        = true
+  }
+
+  # Allow outbound traffic
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.cluster_name}-eks-nodes-sg"
+  }
+}
+
