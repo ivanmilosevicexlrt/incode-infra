@@ -21,12 +21,13 @@ resource "aws_rds_cluster" "aurora" {
 resource "aws_db_instance" "postgres" {
   count               = var.db_engine == "rds" ? 1 : 0
   engine              = "postgres"
-  instance_class      = var.environment == "prod" ? "db.t3.medium" : "db.t3.small"
-  allocated_storage   = 20
+  instance_class      = var.environment == "prod" ? "db.t3.micro" : "db.t2.micro"
+  allocated_storage   = 5
+  storage_type = gp2
   multi_az            = var.environment == "prod" ? true : false
   username            = var.db_username
   password            = var.db_password
-  backup_retention_period = 7
+  backup_retention_period = 1 # this comes as limitation of the free tier !!! 
   storage_encrypted   = true
   publicly_accessible = false
   vpc_security_group_ids = var.security_group_ids
