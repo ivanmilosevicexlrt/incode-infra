@@ -23,7 +23,7 @@ resource "aws_db_instance" "postgres" {
   engine              = "postgres"
   instance_class      = var.environment == "prod" ? "db.t3.micro" : "db.t2.micro"
   allocated_storage   = 5
-  storage_type = gp2
+  storage_type = "gp2"
   multi_az            = var.environment == "prod" ? true : false
   username            = var.db_username
   password            = var.db_password
