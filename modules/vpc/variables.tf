@@ -20,11 +20,6 @@ variable "az_count" {
   }
 }
 
-# variable "azs" {
-#   description = "List of availability zones"
-#   type        = list(string)
-# }
-
 variable "enable_monitoring" {
   description = "Whether to create monitoring subnets"
   type        = bool
