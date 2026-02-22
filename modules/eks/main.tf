@@ -43,7 +43,7 @@ resource "aws_eks_node_group" "default" {
   node_group_name = "${var.name}-default"
   node_role_arn   = aws_iam_role.eks_nodes.arn
   subnet_ids      = var.subnet_ids
-
+  capacity_type   = "SPOT" # attempt to bypass quota
   scaling_config {
     desired_size = var.node_desired_size
     max_size     = var.node_max_size
