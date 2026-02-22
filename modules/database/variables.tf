@@ -1,5 +1,5 @@
 variable "db_engine" {
-  description = "Database engine choice: aurora or rds"
+  description = "Database engine type: aurora or rds"
   type        = string
   default     = "rds"
   validation {

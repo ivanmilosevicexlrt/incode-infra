@@ -1,7 +1,7 @@
 # Aurora Serverless v2 (for dev/POC)
 resource "aws_rds_cluster" "aurora" {
   count                   = var.db_engine == "aurora" ? 1 : 0
-  cluster_identifier      = "incode-db-${name}"
+  cluster_identifier      = "incode-db-${var.environment}"
   engine                  = "aurora-postgresql"
   engine_mode             = "provisioned"
   database_name           = "appdb"
@@ -21,7 +21,7 @@ resource "aws_rds_cluster" "aurora" {
 # RDS PostgreSQL (for prod)
 resource "aws_db_instance" "postgres" {
   count                        = var.db_engine == "rds" ? 1 : 0
-  identifier                   = "incode-db-${name}"
+  identifier                   = "incode-db-${var.environment}"
   engine                       = "postgres"
   instance_class               = var.environment == "prod" ? "db.t3.micro" : "db.t2.micro"
   allocated_storage            = 5
