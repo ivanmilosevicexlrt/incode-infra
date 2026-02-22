@@ -54,10 +54,10 @@ variable "node_max_size" {
 variable "node_instance_type" {
   description = "EC2 instance type for EKS worker nodes"
   type        = string
-  default     = "t3.small"
+  default     = "t3.micro"
 
   validation {
     condition     = can(regex("^([a-z0-9]+)\\.[a-z0-9]+$", var.node_instance_type))
-    error_message = "Must be a valid EC2 instance type, e.g., t3.medium, m5.large."
+    error_message = "Must be a valid EC2 instance type"
   }
 }
