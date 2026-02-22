@@ -59,6 +59,20 @@ resource "aws_eks_node_group" "default" {
   ]
 }
 
+resource "aws_eks_addon" "pod_identity" {
+  cluster_name  = aws_eks_cluster.this.name
+  addon_name    = "eks-pod-identity-agent"
+
+  depends_on = [aws_eks_node_group.default]
+}
+
+resource "aws_eks_addon" "vpc_cni" {
+  cluster_name  = aws_eks_cluster.this.name
+  addon_name    = "vpc-cni"
+
+  depends_on = [aws_eks_node_group.default]
+}
+
 resource "aws_security_group" "eks_nodes" {
   name        = "${var.name}-eks-nodes-sg"
   description = "Security group for EKS worker nodes"
