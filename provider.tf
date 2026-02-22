@@ -3,7 +3,7 @@ provider "aws" {
   profile = "terraform"
   default_tags {
     tags = {
-      env = "prod"
+      env = var.env
       createdBy = "terraform"
     }
   }
@@ -19,8 +19,8 @@ terraform {
   backend "s3" {
     region         = "eu-central-1"
     bucket         = "terraform-state-imilosevic"
-    key            = "prod/terraform.tfstate"
+    key            = "${var.env}/terraform.tfstate"
     encrypt        = true
-    dynamodb_table = "terraform-lock-imilosevic-prod"
+    dynamodb_table = "terraform-lock-imilosevic-${var.env}"
   }
 }
