@@ -62,13 +62,15 @@ resource "aws_eks_node_group" "default" {
 resource "aws_eks_addon" "pod_identity" {
   cluster_name  = aws_eks_cluster.this.name
   addon_name    = "eks-pod-identity-agent"
-
+  resolve_conflicts_on_create = "OVERWRITE"
+  
   depends_on = [aws_eks_node_group.default]
 }
 
 resource "aws_eks_addon" "vpc_cni" {
   cluster_name  = aws_eks_cluster.this.name
   addon_name    = "vpc-cni"
+  resolve_conflicts_on_create = "OVERWRITE"
 
   depends_on = [aws_eks_node_group.default]
 }
