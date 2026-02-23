@@ -41,7 +41,7 @@ resource "aws_db_instance" "postgres" {
   performance_insights_enabled = true
 }
 
-# Optional Read Replica (only in prod)
+#(only in prod)
 resource "aws_db_instance" "replica" {
   count                  = var.environment == "prod" && var.db_engine == "rds" ? 1 : 0
   engine                 = "postgres"
