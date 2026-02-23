@@ -24,4 +24,4 @@ terraform.tfvars
 # CLI configuration files
 .terraformrc
 terraform.rc
-policy.json
+policy-*.json
