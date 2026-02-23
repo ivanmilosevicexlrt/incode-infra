@@ -1,6 +1,6 @@
-locals {
-  db_creds = jsondecode(data.aws_secretsmanager_secret_version.db_creds.secret_string)
-}
+# locals {
+#   db_creds = jsondecode(data.aws_secretsmanager_secret_version.db_creds.secret_string)
+# }
 
 # Aurora Serverless v2 (for dev/POC)
 resource "aws_rds_cluster" "aurora" {
@@ -9,11 +9,11 @@ resource "aws_rds_cluster" "aurora" {
   engine                  = "aurora-postgresql"
   engine_mode             = "provisioned"
   database_name           = "appdb"
-  master_username = local.db_creds["username"]
-  master_password = local.db_creds["password"]
+  master_username = var.db_username
+  master_password = var.db_password
   backup_retention_period = 1 # this comes as limitation of the free tier !!! 
   storage_encrypted       = true
-  vpc_security_group_ids  = var.security_group_ids
+  #vpc_security_group_ids  = var.security_group_ids
   db_subnet_group_name    = var.subnet_group_name
 
   scaling_configuration {
@@ -36,7 +36,7 @@ resource "aws_db_instance" "postgres" {
   backup_retention_period      = 1 # this comes as limitation of the free tier !!! 
   storage_encrypted            = true
   publicly_accessible          = false
-  vpc_security_group_ids       = var.security_group_ids
+  #vpc_security_group_ids       = var.security_group_ids
   db_subnet_group_name         = var.subnet_group_name
   performance_insights_enabled = true
 }
@@ -48,6 +48,6 @@ resource "aws_db_instance" "replica" {
   instance_class         = "db.t3.micro"
   replicate_source_db    = aws_db_instance.postgres[0].arn
   publicly_accessible    = false
-  vpc_security_group_ids = var.security_group_ids
+  #vpc_security_group_ids = var.security_group_ids
   db_subnet_group_name   = var.subnet_group_name
 }

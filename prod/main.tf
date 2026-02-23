@@ -1,3 +1,8 @@
+locals {
+  db_creds = jsondecode(data.aws_secretsmanager_secret_version.db_creds.secret_string)
+}
+
+
 # For prod (3 AZs)
 module "vpc" {
   source            = "../modules/vpc"
@@ -22,10 +27,11 @@ module "database" {
   source             = "../modules/database"
   db_engine          = "rds" # or "aurora"
   environment        = "prod"
-  db_username        = data.aws_ssm_parameter.dbuser.value
-  db_password        = data.aws_ssm_parameter.dbpassword.value
+  db_username        = local.db_creds.username #data.aws_ssm_parameter.dbuser.value
+  db_password        =local.db_creds.password  #data.aws_ssm_parameter.dbpassword.value
   subnet_group_name  = module.vpc.db_subnet_group
-  security_group_ids = [module.eks.sg_id]
+  #security_group_ids = [module.eks.sg_id]
+  db_creds = data.aws_secretsmanager_secret.db_creds
 
   #depends_on = [ module.eks ] #debug
 }
