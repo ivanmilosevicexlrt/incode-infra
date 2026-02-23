@@ -46,6 +46,6 @@ variable "subnet_group_name" {
 #   type        = list(string)
 # }
 
-variable "db_creds" {
-  description = "dbcredentials"
-}
+# variable "db_creds" {
+#   description = "dbcredentials"
+# }
