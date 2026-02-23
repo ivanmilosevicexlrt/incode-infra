@@ -19,14 +19,14 @@ resource "aws_internet_gateway" "igw" {
 
 resource "aws_subnet" "public_subnet_for_nat" {
   vpc_id                  = aws_vpc.this.id
-  cidr_block              = cidrsubnet(var.vpc_cidr, 8, 100) 
+  cidr_block              = cidrsubnet(var.vpc_cidr, 8, 100)
   availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "${var.name}-public-${data.aws_availability_zones.available.names[0]}"
-    Tier = "public"
-    "kubernetes.io/role/elb"                    = "1"
+    Name                                    = "${var.name}-public-${data.aws_availability_zones.available.names[0]}"
+    Tier                                    = "public"
+    "kubernetes.io/role/elb"                = "1"
     "kubernetes.io/cluster/${var.name}-eks" = "shared"
   }
 }
@@ -50,21 +50,21 @@ resource "aws_route_table_association" "public_nat" {
 }
 
 resource "aws_eip" "nat" {
-  count = var.enable_nat ? 1:0
+  count = var.enable_nat ? 1 : 0
   tags = {
     Name = "${var.name}-nat-eip"
   }
 }
 
 resource "aws_nat_gateway" "nat_gateway" {
-  count = var.enable_nat ? 1:0
+  count         = var.enable_nat ? 1 : 0
   allocation_id = aws_eip.nat[0].id
   subnet_id     = aws_subnet.public_subnet_for_nat.id
 
   tags = {
     Name = "${var.name}-nat"
   }
-  depends_on = [ aws_internet_gateway.igw ]
+  depends_on = [aws_internet_gateway.igw]
 }
 
 
@@ -75,10 +75,10 @@ resource "aws_subnet" "app" {
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
-    Name = "${var.name}-app-${data.aws_availability_zones.available.names[count.index]}"
-    Tier = "application"
-    "kubernetes.io/role/internal-elb"             = "1"
-    "kubernetes.io/cluster/${var.name}-eks"   = "shared"
+    Name                                    = "${var.name}-app-${data.aws_availability_zones.available.names[count.index]}"
+    Tier                                    = "application"
+    "kubernetes.io/role/internal-elb"       = "1"
+    "kubernetes.io/cluster/${var.name}-eks" = "shared"
   }
 }
 

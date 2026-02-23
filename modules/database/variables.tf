@@ -48,4 +48,4 @@ variable "subnet_group_name" {
 
 variable "db_creds" {
   description = "dbcredentials"
-} 
+}

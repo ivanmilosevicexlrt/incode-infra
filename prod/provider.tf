@@ -3,7 +3,7 @@ provider "aws" {
   profile = "terraform"
   default_tags {
     tags = {
-      env = var.env
+      env       = var.env
       createdBy = "terraform"
     }
   }

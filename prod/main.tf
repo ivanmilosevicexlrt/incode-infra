@@ -24,12 +24,12 @@ module "vpc" {
 # }
 
 module "database" {
-  source             = "../modules/database"
-  db_engine          = "rds" # or "aurora"
-  environment        = "prod"
-  db_username        = local.db_creds.username #data.aws_ssm_parameter.dbuser.value
-  db_password        =local.db_creds.password  #data.aws_ssm_parameter.dbpassword.value
-  subnet_group_name  = module.vpc.db_subnet_group
+  source            = "../modules/database"
+  db_engine         = "rds" # or "aurora"
+  environment       = "prod"
+  db_username       = local.db_creds.username #data.aws_ssm_parameter.dbuser.value
+  db_password       = local.db_creds.password #data.aws_ssm_parameter.dbpassword.value
+  subnet_group_name = module.vpc.db_subnet_group
   #security_group_ids = [module.eks.sg_id]
   db_creds = data.aws_secretsmanager_secret.db_creds
 

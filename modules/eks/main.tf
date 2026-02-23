@@ -14,7 +14,7 @@ resource "aws_eks_cluster" "this" {
 
   vpc_config {
     subnet_ids         = var.subnet_ids
-    security_group_ids = [aws_security_group.eks_nodes.id]  # ← attach SG
+    security_group_ids = [aws_security_group.eks_nodes.id] # ← attach SG
   }
 }
 
@@ -52,7 +52,7 @@ resource "aws_eks_node_group" "default" {
 
   instance_types = [var.node_instance_type]
 
-  depends_on = [                                                          
+  depends_on = [
     aws_iam_role_policy_attachment.eks_nodes_AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.eks_nodes_AmazonEC2ContainerRegistryReadOnly,
     aws_iam_role_policy_attachment.eks_node_AmazonEKS_CNI_Policy,
@@ -60,16 +60,16 @@ resource "aws_eks_node_group" "default" {
 }
 
 resource "aws_eks_addon" "pod_identity" {
-  cluster_name  = aws_eks_cluster.this.name
-  addon_name    = "eks-pod-identity-agent"
+  cluster_name                = aws_eks_cluster.this.name
+  addon_name                  = "eks-pod-identity-agent"
   resolve_conflicts_on_create = "OVERWRITE"
-  
+
   depends_on = [aws_eks_node_group.default]
 }
 
 resource "aws_eks_addon" "vpc_cni" {
-  cluster_name  = aws_eks_cluster.this.name
-  addon_name    = "vpc-cni"
+  cluster_name                = aws_eks_cluster.this.name
+  addon_name                  = "vpc-cni"
   resolve_conflicts_on_create = "OVERWRITE"
 
   depends_on = [aws_eks_node_group.default]
@@ -83,14 +83,14 @@ resource "aws_security_group" "eks_nodes" {
   ingress {
     from_port = 0
     to_port   = 0
-    protocol  = "-1"    # ← FIXED from "ALL"
+    protocol  = "-1" # ← FIXED from "ALL"
     self      = true
   }
 
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1"  # ← FIXED from "ALL"
+    protocol    = "-1" # ← FIXED from "ALL"
     cidr_blocks = ["0.0.0.0/0"]
   }
 

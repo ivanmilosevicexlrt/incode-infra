@@ -16,7 +16,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 6.0"  # allows newer 6.x versions, prod is pinned to 6.33.0
+      version = "~> 6.0" # allows newer 6.x versions, prod is pinned to 6.33.0
     }
   }
 
