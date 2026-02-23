@@ -1,3 +1,7 @@
+locals {
+  db_creds = jsondecode(data.aws_secretsmanager_secret_version.db_creds.secret_string)
+}
+
 # Aurora Serverless v2 (for dev/POC)
 resource "aws_rds_cluster" "aurora" {
   count                   = var.db_engine == "aurora" ? 1 : 0
@@ -5,8 +9,8 @@ resource "aws_rds_cluster" "aurora" {
   engine                  = "aurora-postgresql"
   engine_mode             = "provisioned"
   database_name           = "appdb"
-  master_username         = var.db_username
-  master_password         = var.db_password
+  master_username = local.db_creds["username"]
+  master_password = local.db_creds["password"]
   backup_retention_period = 1 # this comes as limitation of the free tier !!! 
   storage_encrypted       = true
   vpc_security_group_ids  = var.security_group_ids

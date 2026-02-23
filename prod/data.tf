@@ -1,8 +1,7 @@
-data "aws_ssm_parameter" "dbpassword" {
-  name            = "/prod/app-1/dbpassword"
-  with_decryption = true
+data "aws_secretsmanager_secret" "db_creds" {
+  name = "/prod/app-1/"
 }
 
-data "aws_ssm_parameter" "dbuser" {
-  name = "/prod/app-1/dbuser"
+data "aws_secretsmanager_secret_version" "db_creds" {
+  secret_id = data.aws_secretsmanager_secret.db_creds.id
 }

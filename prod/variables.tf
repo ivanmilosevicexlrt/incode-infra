@@ -1,14 +1,16 @@
 variable "env" {
   type = string
+  default = "prod"
 }
 
 variable "vpc_cidr" {
   type = string
+  default = "10.1.0.0/16"
 }
 
 variable "az_count" {
   type    = number
-  default = 2
+  default = 3
 }
 
 variable "node_instance_type" {
@@ -18,17 +20,17 @@ variable "node_instance_type" {
 
 variable "node_desired_size" {
   type    = number
-  default = 2
+  default = 3
 }
 
 variable "node_min_size" {
   type    = number
-  default = 2
+  default = 3
 }
 
 variable "node_max_size" {
   type    = number
-  default = 4
+  default = 6
 }
 
 variable "enable_nat" {
