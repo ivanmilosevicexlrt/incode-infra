@@ -11,7 +11,7 @@ resource "aws_rds_cluster" "aurora" {
   database_name           = "appdb"
   master_username         = var.db_username
   master_password         = var.db_password
-  backup_retention_period = 1 # this comes as limitation of the free tier !!! 
+  backup_retention_period = var.backup_retention_period
   storage_encrypted       = true
   #vpc_security_group_ids  = var.security_group_ids
   db_subnet_group_name = var.subnet_group_name
@@ -33,7 +33,7 @@ resource "aws_db_instance" "postgres" {
   multi_az                = var.environment == "prod" ? true : false
   username                = var.db_username
   password                = var.db_password
-  backup_retention_period = 1 # this comes as limitation of the free tier !!! 
+  backup_retention_period = var.backup_retention_period
   storage_encrypted       = true
   publicly_accessible     = false
   #vpc_security_group_ids       = var.security_group_ids
@@ -48,6 +48,7 @@ resource "aws_db_instance" "replica" {
   instance_class      = "db.t3.micro"
   replicate_source_db = aws_db_instance.postgres[0].arn
   publicly_accessible = false
+  storage_encrypted = true
   #vpc_security_group_ids = var.security_group_ids
   db_subnet_group_name = var.subnet_group_name
 }

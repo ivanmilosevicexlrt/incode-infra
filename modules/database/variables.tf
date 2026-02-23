@@ -11,7 +11,7 @@ variable "db_engine" {
 variable "backup_retention_period" {
   description = "Number of days to retain automated backups"
   type        = number
-  default     = 7
+  default     = 1 # free tier, in real-life scenario it will longer.
 
   validation {
     condition     = var.backup_retention_period >= 1 && var.backup_retention_period <= 35
