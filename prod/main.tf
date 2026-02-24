@@ -23,15 +23,15 @@ module "eks" {
   node_instance_type = "t3.micro"
 }
 
-# module "database" {
-#   source            = "../modules/database"
-#   db_engine         = "aurora" 
-#   environment       = "prod"
-#   db_username       = local.db_creds.username 
-#   db_password       = local.db_creds.password 
-#   subnet_group_name = module.vpc.db_subnet_group
+module "database" {
+  source            = "../modules/database"
+  db_engine         = "rds" 
+  environment       = "prod"
+  db_username       = local.db_creds.username 
+  db_password       = local.db_creds.password 
+  subnet_group_name = module.vpc.db_subnet_group
   
-#   #security_group_ids = [module.eks.sg_id]
-#   #depends_on = [ module.eks ] #debug
-# }
+  security_group_ids = [module.eks.sg_id]
+  depends_on = [ module.eks ] #debug
+}
 

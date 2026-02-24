@@ -41,10 +41,10 @@ variable "subnet_group_name" {
   type        = string
 }
 
-# variable "security_group_ids" {
-#   description = "Security groups allowed to connect (e.g., EKS SG)"
-#   type        = list(string)
-# }
+variable "security_group_ids" {
+  description = "Security groups allowed to connect (e.g., EKS SG)"
+  type        = list(string)
+}
 
 # variable "db_creds" {
 #   description = "dbcredentials"
