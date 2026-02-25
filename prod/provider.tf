@@ -1,5 +1,5 @@
 provider "aws" {
-  region  = "eu-central-1"
+  region  = "us-east-1"
   profile = "terraform"
   default_tags {
     tags = {
@@ -17,10 +17,7 @@ terraform {
   }
 
   backend "s3" {
-    region         = "eu-central-1"
-    bucket         = "terraform-state-imilosevic"
-    key            = "${var.env}/terraform.tfstate"
+    key            = "plc/terraform.tfstate"
     encrypt        = true
-    dynamodb_table = "terraform-lock-imilosevic-${var.env}"
   }
 }
