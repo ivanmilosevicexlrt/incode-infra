@@ -107,6 +107,12 @@ resource "aws_eks_addon" "vpc_cni" {
   depends_on                  = [aws_eks_node_group.default]
 }
 
+resource "aws_eks_addon" "metrics_server" {
+  cluster_name = aws_eks_cluster.this.name
+  addon_name   = "metrics-server"
+  resolve_conflicts_on_create = "OVERWRITE"
+  depends_on                  = [aws_eks_node_group.default]
+}
 resource "aws_security_group" "eks_nodes" {
   name        = "${var.name}-eks-nodes-sg"
   description = "Security group for EKS worker nodes"
