@@ -8,6 +8,12 @@ variable "name" {
   }
 }
 
+variable "deletion_protection" {
+  description = "Whether to enable deletion protection for the EKS cluster"
+  type        = bool
+  default     = true
+}
+
 variable "subnet_ids" {
   description = "List of subnet IDs for EKS"
   type        = list(string)

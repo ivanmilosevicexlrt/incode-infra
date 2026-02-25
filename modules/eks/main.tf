@@ -11,7 +11,7 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_AmazonEKSClusterPolicy" {
 resource "aws_eks_cluster" "this" {
   name     = var.name
   role_arn = aws_iam_role.eks_cluster.arn
-
+  deletion_protection = var.deletion_protection
   vpc_config {
     subnet_ids              = var.subnet_ids
     security_group_ids      = [aws_security_group.eks_nodes.id]

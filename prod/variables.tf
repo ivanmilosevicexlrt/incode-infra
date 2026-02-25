@@ -25,7 +25,7 @@ variable "az_count" {
 
 variable "node_instance_type" {
   type    = string
-  default = "t3.medium"
+  default = "t3.micro"
 }
 
 variable "node_desired_size" {
