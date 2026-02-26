@@ -12,6 +12,15 @@ resource "aws_eks_cluster" "this" {
   name     = var.name
   role_arn = aws_iam_role.eks_cluster.arn
   deletion_protection = var.deletion_protection
+
+  #the safest during the testing
+  access_config {
+    authentication_mode = "API_AND_CONFIG_MAP"
+    #this is needed to allow the creator of the cluster to have admin permissions by default, 
+     #otherwise we would need to manually edit aws-auth configmap after cluster creation to add admin permissions for the creator
+    bootstrap_cluster_creator_admin_permissions = true
+  }
+
   vpc_config {
     subnet_ids              = var.subnet_ids
     security_group_ids      = [aws_security_group.eks_nodes.id]
@@ -149,4 +158,12 @@ resource "aws_security_group" "eks_nodes" {
   tags = {
     Name = "${var.name}-eks-nodes-sg"
   }
+}
+
+module "eks_access" {
+  source       = "./eks-access"
+  cluster_name = aws_eks_cluster.this.name
+  admin_users  = var.admin_users
+  editor_users = var.editor_users
+  viewer_users = var.viewer_users
 }

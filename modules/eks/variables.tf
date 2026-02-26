@@ -67,3 +67,24 @@ variable "node_instance_type" {
     error_message = "Must be a valid EC2 instance type"
   }
 }
+
+########EKS#ACCESS#######
+
+# variable "account_id" {
+#   type = string
+# }
+
+variable "admin_users" {
+  type    = list(string)
+  default = []
+}
+
+variable "editor_users" {
+  type    = list(string)
+  default = []
+}
+
+variable "viewer_users" {
+  type    = list(string)
+  default = []
+}
