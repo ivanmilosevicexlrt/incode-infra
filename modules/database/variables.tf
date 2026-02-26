@@ -46,6 +46,13 @@ variable "security_group_ids" {
   type        = list(string)
 }
 
-# variable "db_creds" {
-#   description = "dbcredentials"
-# }
+variable "db_instance_class" {
+  description = "RDS instance class"
+  type        = string
+  default     = "db.t3.medium"
+
+  validation {
+    condition     = can(regex("^db\\.[a-z0-9]+\\.[a-z0-9]+$", var.db_instance_class))
+    error_message = "DB instance class must be in the format 'db.<family>.<size>'."
+  }
+}

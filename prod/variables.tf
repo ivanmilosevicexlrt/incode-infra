@@ -28,6 +28,12 @@ variable "node_instance_type" {
   default = "t3.micro"
 }
 
+variable "db_instance_class" {
+  description = "RDS instance class"
+  type        = string
+  default     = "db.t3.micro"
+}
+
 variable "node_desired_size" {
   type    = number
   default = 3
