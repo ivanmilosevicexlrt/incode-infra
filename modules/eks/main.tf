@@ -160,6 +160,7 @@ resource "aws_security_group" "eks_nodes" {
   }
 }
 
+
 module "eks_access" {
   source       = "./eks-access"
   cluster_name = aws_eks_cluster.this.name
@@ -167,3 +168,6 @@ module "eks_access" {
   editor_users = var.editor_users
   viewer_users = var.viewer_users
 }
+
+
+
