@@ -38,23 +38,23 @@ resource "aws_rds_cluster" "aurora" {
 }
 
 resource "aws_rds_cluster_instance" "aurora_instance" {
-  count              = var.db_engine == "aurora" ? 1 : 0
-  identifier         = "incode-db-${var.environment}-instance"
-  cluster_identifier = aws_rds_cluster.aurora[0].id
-  instance_class     = "db.serverless"
-  engine             = aws_rds_cluster.aurora[0].engine
-  engine_version     = aws_rds_cluster.aurora[0].engine_version
+  count                        = var.db_engine == "aurora" ? 1 : 0
+  identifier                   = "incode-db-${var.environment}-instance"
+  cluster_identifier           = aws_rds_cluster.aurora[0].id
+  instance_class               = "db.serverless"
+  engine                       = aws_rds_cluster.aurora[0].engine
+  engine_version               = aws_rds_cluster.aurora[0].engine_version
   performance_insights_enabled = true
 }
 
 # Read Replica (only in prod, only with aurora engine)
 resource "aws_rds_cluster_instance" "aurora_replica" {
-  count              = var.db_engine == "aurora" && var.environment == "prod" ? 1 : 0
-  identifier         = "incode-db-${var.environment}-replica"
-  cluster_identifier = aws_rds_cluster.aurora[0].id
-  instance_class     = "db.serverless"
-  engine             = aws_rds_cluster.aurora[0].engine
-  engine_version     = aws_rds_cluster.aurora[0].engine_version
+  count                        = var.db_engine == "aurora" && var.environment == "prod" ? 1 : 0
+  identifier                   = "incode-db-${var.environment}-replica"
+  cluster_identifier           = aws_rds_cluster.aurora[0].id
+  instance_class               = "db.serverless"
+  engine                       = aws_rds_cluster.aurora[0].engine
+  engine_version               = aws_rds_cluster.aurora[0].engine_version
   performance_insights_enabled = true
 }
 
@@ -95,11 +95,11 @@ resource "aws_db_instance" "postgres_replica" {
   db_subnet_group_name   = var.subnet_group_name
   vpc_security_group_ids = var.security_group_ids
 
-  performance_insights_enabled  = true
-  skip_final_snapshot           = false
-  final_snapshot_identifier     = "incode-db-${var.environment}-replica-final"
-  apply_immediately             = false
-  auto_minor_version_upgrade    = false
+  performance_insights_enabled = true
+  skip_final_snapshot          = false
+  final_snapshot_identifier    = "incode-db-${var.environment}-replica-final"
+  apply_immediately            = false
+  auto_minor_version_upgrade   = false
 }
 
 #-RDS-PROXY-----------------------------------------------------------
@@ -107,7 +107,8 @@ resource "aws_db_instance" "postgres_replica" {
 
 # IAM Role for RDS Proxy to access Secrets Manager
 resource "aws_iam_role" "proxy_role" {
-  name = "incode-db-proxy-role-${var.environment}"
+  count = var.db_engine == "rds" ? 1 : 0
+  name  = "incode-db-proxy-role-${var.environment}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -123,8 +124,8 @@ resource "aws_iam_role" "proxy_role" {
   })
 }
 
-# IAM Policy granting access to the specific secret
 resource "aws_iam_policy" "proxy_secret_policy" {
+  count       = var.db_engine == "rds" ? 1 : 0
   name        = "incode-db-proxy-secret-policy-${var.environment}"
   description = "Allow RDS Proxy to read DB credentials from Secrets Manager"
 
@@ -132,32 +133,33 @@ resource "aws_iam_policy" "proxy_secret_policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        Effect   = "Allow",
-        Action   = [
+        Effect = "Allow",
+        Action = [
           "secretsmanager:GetSecretValue",
           "secretsmanager:DescribeSecret"
         ],
         Resource = data.aws_secretsmanager_secret.db_secret.arn
-        
+
       }
     ]
   })
 }
 
-# Attach policy to role
 resource "aws_iam_role_policy_attachment" "proxy_secret_attach" {
-  role       = aws_iam_role.proxy_role.name
-  policy_arn = aws_iam_policy.proxy_secret_policy.arn
+  count      = var.db_engine == "rds" ? 1 : 0
+  role       = aws_iam_role.proxy_role[0].name
+  policy_arn = aws_iam_policy.proxy_secret_policy[0].arn
 }
 
 
 resource "aws_db_proxy" "postgres_proxy" {
+  count                  = var.db_engine == "rds" ? 1 : 0
   name                   = "incode-db-proxy-${var.environment}"
   debug_logging          = false
   engine_family          = "POSTGRESQL"
   idle_client_timeout    = 1800
   require_tls            = true
-  role_arn               = aws_iam_role.proxy_role.arn # IAM role allowing Secrets Manager access
+  role_arn               = aws_iam_role.proxy_role[0].arn # IAM role allowing Secrets Manager access
   vpc_security_group_ids = var.security_group_ids
   vpc_subnet_ids         = data.aws_db_subnet_group.selected.subnet_ids # Ensure these are in the same VPC
 
@@ -169,20 +171,21 @@ resource "aws_db_proxy" "postgres_proxy" {
   }
 }
 
-# 2. Define the Target Group
+
 resource "aws_db_proxy_default_target_group" "postgres_target_group" {
-  db_proxy_name = aws_db_proxy.postgres_proxy.name
+  count         = var.db_engine == "rds" ? 1 : 0
+  db_proxy_name = aws_db_proxy.postgres_proxy[0].name
 
   connection_pool_config {
-    max_connections_percent      = 100
-    connection_borrow_timeout    = 120
-    session_pinning_filters      = ["EXCLUDE_VARIABLE_SETS"]
+    max_connections_percent   = 100
+    connection_borrow_timeout = 120
+    session_pinning_filters   = ["EXCLUDE_VARIABLE_SETS"]
   }
 }
 
-# 3. Register your RDS Instance to the Proxy
 resource "aws_db_proxy_target" "postgres_target" {
+  count                  = var.db_engine == "rds" ? 1 : 0
   db_instance_identifier = aws_db_instance.postgres[0].identifier
-  db_proxy_name          = aws_db_proxy.postgres_proxy.name
-  target_group_name      = aws_db_proxy_default_target_group.postgres_target_group.name
+  db_proxy_name          = aws_db_proxy.postgres_proxy[0].name
+  target_group_name      = aws_db_proxy_default_target_group.postgres_target_group[0].name
 }
