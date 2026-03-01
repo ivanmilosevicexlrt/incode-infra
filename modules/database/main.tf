@@ -66,7 +66,7 @@ resource "aws_db_instance" "postgres" {
   identifier                   = "incode-db-${var.environment}"
   engine                       = "postgres"
   instance_class               = var.db_instance_class
-  allocated_storage            = var.environment == "prod" ? 20 : 5
+  allocated_storage            = 20
   storage_type                 = "gp2"
   multi_az                     = var.environment == "prod" ? true : false
   username                     = var.db_username

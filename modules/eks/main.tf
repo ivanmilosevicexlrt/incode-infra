@@ -160,7 +160,6 @@ resource "aws_security_group" "eks_nodes" {
   }
 }
 
-
 module "eks_access" {
   source       = "./eks-access"
   cluster_name = aws_eks_cluster.this.name

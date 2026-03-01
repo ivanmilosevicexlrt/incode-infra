@@ -13,6 +13,7 @@ module "vpc" {
   enable_nat        = true
 }
 
+#--EKS------------------------------------------------------
 module "eks" {
   source             = "../modules/eks"
   name               = "prod-eks"
@@ -21,6 +22,24 @@ module "eks" {
   node_min_size      = 3
   node_max_size      = 6
   node_instance_type = var.node_instance_type
+}
+
+resource "null_resource" "kubeconfig" {
+  depends_on = [module.eks]
+  provisioner "local-exec" {
+    command = "aws eks update-kubeconfig --name ${module.eks.cluster_name} --region us-east-1 --profile ${var.aws_profile} --kubeconfig /tmp/kubeconfig-${module.eks.cluster_name}"
+  }
+}
+
+
+module "addons" {
+  source = "../modules/eks/addons"
+
+  cluster_name      = module.eks.cluster_name
+  karpenter_version = "1.9.0"
+  eso_version       = "0.10.0"
+  karpenter_role_arn = module.eks.karpenter_role_arn
+  depends_on = [null_resource.kubeconfig]
 }
 
 #--DB------------------------------------------------------

@@ -8,11 +8,25 @@ provider "aws" {
     }
   }
 }
+
+
+provider "helm" {
+  kubernetes = {
+    config_path = "/tmp/kubeconfig-${var.env}-eks"
+  }
+}
+
+//provider "helm" {}
+
 terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "6.33.0"
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "3.1.1"
     }
   }
 
