@@ -16,8 +16,6 @@ provider "helm" {
   }
 }
 
-//provider "helm" {}
-
 terraform {
   required_providers {
     aws = {
@@ -28,6 +26,10 @@ terraform {
       source  = "hashicorp/helm"
       version = "3.1.1"
     }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
+    }    
   }
 
   backend "s3" {

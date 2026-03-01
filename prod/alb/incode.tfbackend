@@ -1,0 +1,4 @@
+bucket         = "terraform-state-in-imilosevic"
+region  = "us-east-1"
+profile = "inc"
+key     = "prod/terraform-alb.tfstate"

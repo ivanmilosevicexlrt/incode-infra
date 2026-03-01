@@ -25,3 +25,7 @@ data "aws_iam_policy_document" "eks_cluster_assume" {
 data "aws_subnet" "first" {
   id = var.subnet_ids[0]
 }
+
+data "tls_certificate" "eks" {
+  url = aws_eks_cluster.this.identity[0].oidc[0].issuer
+}
