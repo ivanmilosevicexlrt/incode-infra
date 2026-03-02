@@ -12,19 +12,14 @@ on:
 jobs:
   check-tf-version:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: envs/${{ github.ref_name }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.14.3   # pin version
+          terraform_version: 1.14.3
+      - run: ls -la
+      - run: terraform version
 
-      - name: List files in terraform directory
-        working-directory: ${{ github.ref_name }}  
-        run: ls -la
-
-      - name: Run Terraform version inside branch directory
-        working-directory: terraform   
-        run: terraform version
