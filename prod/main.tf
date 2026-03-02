@@ -40,6 +40,8 @@ module "addons" {
   eso_version       = "0.10.0"
   karpenter_role_arn = module.eks.karpenter_role_arn
   depends_on = [null_resource.kubeconfig]
+  oidc_provider_arn = module.eks.oidc_provider_arn
+
 }
 
 #--DB------------------------------------------------------
