@@ -1,13 +1,14 @@
 name: Terraform Version Check
 
-on: 
-  workflow_dispatch: 
-  pull_request: 
-    branches: 
-      - prod
+on:
+  workflow_dispatch:  # manual trigger
+  pull_request:
+    branches:
+      - prod          # run on PRs to prod branch
   push:
     branches:
-      - prod 
+      - main          # run on pushes to main branch
+
 jobs:
   check-tf-version:
     runs-on: ubuntu-latest
@@ -18,7 +19,12 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.14.3
+          terraform_version: 1.14.3   # pin version
 
-      - name: Print Terraform version
+      - name: List files in terraform directory
+        working-directory: ${{ github.ref_name }}  
+        run: ls -la
+
+      - name: Run Terraform version inside branch directory
+        working-directory: terraform   
         run: terraform version
