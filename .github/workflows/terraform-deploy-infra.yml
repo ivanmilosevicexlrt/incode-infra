@@ -142,7 +142,7 @@ jobs:
   alb-apply:
     needs: addons-apply
     runs-on: ubuntu-latest
-    environment: prod-alb
+    environment: prod-addons
     if: (github.event_name == 'push' && github.ref == 'refs/heads/prod') || github.event_name == 'workflow_dispatch'
     defaults:
       run:
