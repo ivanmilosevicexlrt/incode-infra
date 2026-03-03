@@ -49,7 +49,6 @@ jobs:
   apply:
       needs: plan
       runs-on: ubuntu-latest
-      needs: plan
       environment: ${{ github.ref_name }} # 👈 This environment has required reviewers
       if: github.event_name == 'push' && github.ref == 'refs/heads/prod'
       defaults:
