@@ -102,7 +102,7 @@ jobs:
             -target=module.eks \
             -target=module.database
 
-  addons-apply:
+  addons-apply: #--addons like ALB, external secrets, etc. are applied in a separate step to speed up iteration on them without waiting for EKS
     needs: infra-apply
     runs-on: ubuntu-latest
     environment: prod-addons
@@ -138,3 +138,39 @@ jobs:
           terraform apply -auto-approve \
             -var-file=envs/incode.tfvars \
             -target=module.addons
+
+  alb-apply:
+    needs: addons-apply
+    runs-on: ubuntu-latest
+    environment: prod-alb
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/prod') || github.event_name == 'workflow_dispatch'
+    defaults:
+      run:
+        working-directory: prod/alb
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: us-east-1
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.14.3
+
+      - name: Configure kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig \
+            --name prod-eks \
+            --region us-east-1 \
+            --kubeconfig /tmp/kubeconfig-prod-eks
+
+      - name: Terraform Init (alb)
+        run: terraform init -backend-config=incode.tfbackend --reconfigure
+
+      - name: Terraform Apply ALB
+        run: |
+          terraform apply -auto-approve \
+            -var-file=prod.tfvars       
