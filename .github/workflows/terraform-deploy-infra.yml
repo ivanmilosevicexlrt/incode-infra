@@ -33,4 +33,15 @@ jobs:
         run: terraform init -backend-config=incode-ci.tfbackend --reconfigure
 
       - name: Terraform Plan
-        run: terraform plan -var-file=envs/${{ github.ref_name }}.tfvars -var="aws_profile="
+        run: terraform plan -var-file=envs/${{ github.ref_name }}.tfvars -var="aws_profile=" \
+              -out plan.out \ 
+              -no-color 2>&1 | tee plan.txt
+      
+      - name: Upload Plan Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: |
+            prod/tfplan
+            prod/.terraform.lock.hcl
+          retention-days: 1              
