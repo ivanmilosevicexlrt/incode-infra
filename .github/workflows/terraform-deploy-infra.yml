@@ -40,7 +40,9 @@ jobs:
         run: terraform init -backend-config=incode-ci.tfbackend --reconfigure
 
       - name: Terraform Plan
-        run: terraform plan -var-file=envs/prod.tfvars -out=plan.out -no-color 2>&1 | tee plan.txt
+        run: |
+            set -o pipefail
+            terraform plan -var-file=envs/prod.tfvars -out=plan.out -no-color 2>&1 | tee plan.txt
 
       - name: Upload Plan Artifact
         uses: actions/upload-artifact@v4
@@ -108,6 +110,7 @@ jobs:
     needs: infra-apply
     runs-on: ubuntu-latest
     environment: prod-addons
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/prod') || github.event_name == 'workflow_dispatch'
     defaults:
       run:
         working-directory: prod
