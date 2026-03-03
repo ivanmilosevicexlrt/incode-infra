@@ -1,3 +1,4 @@
+
 resource "aws_iam_role" "eks_cluster" {
   name               = "${var.name}-eks-cluster-role"
   assume_role_policy = data.aws_iam_policy_document.eks_cluster_assume.json
@@ -6,6 +7,11 @@ resource "aws_iam_role" "eks_cluster" {
 resource "aws_iam_role_policy_attachment" "eks_cluster_AmazonEKSClusterPolicy" {
   role       = aws_iam_role.eks_cluster.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+}
+
+resource "aws_cloudwatch_log_group" "eks" {
+  name              = "/eks/${var.name}"
+  retention_in_days = 30
 }
 
 resource "aws_eks_cluster" "this" {
@@ -27,6 +33,8 @@ resource "aws_eks_cluster" "this" {
     endpoint_private_access = true
     endpoint_public_access  = true
   }
+
+  enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 }
 
 resource "aws_iam_role" "eks_nodes" {
