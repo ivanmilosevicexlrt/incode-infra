@@ -31,3 +31,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1
         run: terraform init -backend-config=incode-ci.tfbackend --reconfigure
+
+      - name: Terraform Plan
+        run: terraform plan -var-file=envs/${{ github.ref_name }}.tfvars  
