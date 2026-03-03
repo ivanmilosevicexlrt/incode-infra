@@ -74,7 +74,7 @@ jobs:
     needs: plan
     runs-on: ubuntu-latest
     environment: prod-apply
-    if: github.event_name == 'push' && github.ref == 'refs/heads/prod'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/prod' || github.event_name == 'workflow_dispatch'
     defaults:
       run:
         working-directory: prod
