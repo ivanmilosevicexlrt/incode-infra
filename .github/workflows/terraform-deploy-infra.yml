@@ -10,7 +10,7 @@ on:
       - prod
 
 jobs:
-  check-tf-version:
+  plan:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name }}
     defaults:
@@ -27,7 +27,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.10.3
+          terraform_version: 1.14.3
 
       - name: Terraform Init
         run: terraform init -backend-config=incode-ci.tfbackend --reconfigure
@@ -44,4 +44,20 @@ jobs:
           path: |
             prod/tfplan
             prod/.terraform.lock.hcl
-          retention-days: 1              
+          retention-days: 1
+
+  apply:
+      needs: plan
+      runs-on: ubuntu-latest
+      needs: plan
+      environment: ${{ github.ref_name }} # 👈 This environment has required reviewers
+      if: github.event_name == 'push' && github.ref == 'refs/heads/prod'
+      defaults:
+        run:
+          working-directory: prod
+      env:
+        AWS_REGION: us-east-1
+
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
