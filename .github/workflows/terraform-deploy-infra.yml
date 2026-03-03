@@ -40,7 +40,7 @@ jobs:
         run: terraform init -backend-config=incode-ci.tfbackend --reconfigure
 
       - name: Terraform Plan
-        run: terraform plan -var-file=envs/prod.tfvars -var="aws_profile=" -out=plan.out -no-color 2>&1 | tee plan.txt
+        run: terraform plan -var-file=envs/prod.tfvars -out=plan.out -no-color 2>&1 | tee plan.txt
 
       - name: Upload Plan Artifact
         uses: actions/upload-artifact@v4
@@ -70,7 +70,7 @@ jobs:
               body: `## Terraform Plan\n\`\`\`hcl\n${truncated}\n\`\`\``
             });
 
-  apply:
+  infra-apply:
     needs: plan
     runs-on: ubuntu-latest
     environment: prod-apply
@@ -101,5 +101,40 @@ jobs:
       - name: Terraform Init
         run: terraform init -backend-config=incode-ci.tfbackend --reconfigure
 
-      - name: Terraform Apply
+      - name: Terraform Apply Infra
         run: terraform apply -auto-approve plan.out
+
+  addons-apply:
+    needs: infra-apply
+    runs-on: ubuntu-latest
+    environment: prod-addons
+    defaults:
+      run:
+        working-directory: prod
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: us-east-1
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.14.3
+
+      # 👇 Generate kubeconfig AFTER cluster is created
+      - name: Configure kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig \
+            --name prod-eks \
+            --region us-east-1 \
+            --kubeconfig /tmp/kubeconfig-prod-eks
+
+      - name: Terraform Init (addons)
+        run: terraform init -backend-config=incode-ci.tfbackend --reconfigure
+
+      - name: Terraform Apply Addons
+        run: terraform apply -auto-approve -var-file=envs/prod-addons.tfvars
