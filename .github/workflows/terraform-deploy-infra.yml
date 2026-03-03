@@ -33,4 +33,4 @@ jobs:
         run: terraform init -backend-config=incode-ci.tfbackend --reconfigure
 
       - name: Terraform Plan
-        run: terraform plan -var-file=envs/${{ github.ref_name }}.tfvars
+        run: terraform plan -var-file=envs/${{ github.ref_name }}.tfvars -var="aws_profile="
