@@ -41,7 +41,6 @@ module "addons" {
   karpenter_role_arn = module.eks.karpenter_role_arn
   depends_on = [null_resource.kubeconfig]
   oidc_provider_arn = module.eks.oidc_provider_arn
-
 }
 
 #--DB------------------------------------------------------
