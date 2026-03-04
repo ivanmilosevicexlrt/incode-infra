@@ -117,7 +117,7 @@ resource "helm_release" "fluent_bit" {
   depends_on = [module.fluent_bit_irsa]
 }
 
-resource "aws_cloudwatch_log_group" "eks" {
-  name              = "/eks/${var.cluster_name}"
-  retention_in_days = 30
-}
+# resource "aws_cloudwatch_log_group" "eks" {
+#   name              = "/eks/${var.cluster_name}"
+#   retention_in_days = 30
+# }
