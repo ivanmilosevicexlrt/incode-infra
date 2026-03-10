@@ -17,19 +17,37 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
-resource "aws_subnet" "public_subnet_for_nat" {
-  vpc_id                  = aws_vpc.this.id
-  cidr_block              = cidrsubnet(var.vpc_cidr, 8, 100)
-  availability_zone       = data.aws_availability_zones.available.names[0]
-  map_public_ip_on_launch = true
+# resource "aws_subnet" "public_subnet_for_nat" {
+#   vpc_id                  = aws_vpc.this.id
+#   cidr_block              = cidrsubnet(var.vpc_cidr, 8, 100)
+#   availability_zone       = data.aws_availability_zones.available.names[0]
+#   map_public_ip_on_launch = true
 
+#   tags = {
+#     Name                                    = "${var.name}-public-${data.aws_availability_zones.available.names[0]}"
+#     Tier                                    = "public"
+#     "kubernetes.io/role/elb"                = "1"
+#     "kubernetes.io/cluster/${var.name}-eks" = "shared"
+#   }
+# }
+
+# Change from single subnet to count-based
+resource "aws_subnet" "public" {
+  count                   = var.az_count
+  vpc_id                  = aws_vpc.this.id
+  cidr_block              = cidrsubnet(var.vpc_cidr, 8, count.index + 100)
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = true
   tags = {
-    Name                                    = "${var.name}-public-${data.aws_availability_zones.available.names[0]}"
+    Name                                    = "${var.name}-public-${data.aws_availability_zones.available.names[count.index]}"
     Tier                                    = "public"
     "kubernetes.io/role/elb"                = "1"
     "kubernetes.io/cluster/${var.name}-eks" = "shared"
   }
 }
+
+
+
 
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
@@ -44,10 +62,10 @@ resource "aws_route_table" "public" {
   }
 }
 
-resource "aws_route_table_association" "public_nat" {
-  subnet_id      = aws_subnet.public_subnet_for_nat.id
-  route_table_id = aws_route_table.public.id
-}
+# resource "aws_route_table_association" "public_nat" {
+#   subnet_id      = aws_subnet.public_subnet_for_nat.id
+#   route_table_id = aws_route_table.public.id
+# }
 
 resource "aws_eip" "nat" {
   count = var.enable_nat ? 1 : 0
@@ -56,10 +74,18 @@ resource "aws_eip" "nat" {
   }
 }
 
+resource "aws_route_table_association" "public" {
+  count          = var.az_count
+  subnet_id      = aws_subnet.public[count.index].id
+  route_table_id = aws_route_table.public.id
+}
+
+
 resource "aws_nat_gateway" "nat_gateway" {
   count         = var.enable_nat ? 1 : 0
   allocation_id = aws_eip.nat[0].id
-  subnet_id     = aws_subnet.public_subnet_for_nat.id
+  #subnet_id     = aws_subnet.public_subnet_for_nat.id
+  subnet_id     = aws_subnet.public[0].id
 
   tags = {
     Name = "${var.name}-nat"
@@ -140,4 +166,13 @@ resource "aws_subnet" "monitoring" {
   }
 }
 
+#--initialy, one public subnet was created, but for HA ALB 2 are minumum-----------------
+moved {
+  from = aws_subnet.public_subnet_for_nat
+  to   = aws_subnet.public[0]
+}
 
+moved {
+  from = aws_route_table_association.public_nat
+  to   = aws_route_table_association.public[0]
+}

@@ -8,6 +8,12 @@ variable "name" {
   }
 }
 
+variable "deletion_protection" {
+  description = "Whether to enable deletion protection for the EKS cluster"
+  type        = bool
+  default     = true
+}
+
 variable "subnet_ids" {
   description = "List of subnet IDs for EKS"
   type        = list(string)
@@ -60,4 +66,25 @@ variable "node_instance_type" {
     condition     = can(regex("^([a-z0-9]+)\\.[a-z0-9]+$", var.node_instance_type))
     error_message = "Must be a valid EC2 instance type"
   }
+}
+
+########EKS#ACCESS#######
+
+# variable "account_id" {
+#   type = string
+# }
+
+variable "admin_users" {
+  type    = list(string)
+  default = []
+}
+
+variable "editor_users" {
+  type    = list(string)
+  default = []
+}
+
+variable "viewer_users" {
+  type    = list(string)
+  default = []
 }

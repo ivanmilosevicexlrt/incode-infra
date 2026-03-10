@@ -1,0 +1,4 @@
+region         = "us-east-1"
+bucket         = "terraform-state-in-imilosevic"
+key            = "prod/terraform.tfstate"
+dynamodb_table = "terraform-lock-imilosevic-prod"

@@ -1,8 +1,15 @@
 output "db_endpoint" {
-  value = var.db_engine == "aurora" ? aws_rds_cluster.aurora[0].endpoint : aws_db_instance.postgres[0].address
+  description = "Primary connection endpoint"
+  value = var.db_engine == "aurora" ? (
+    one(aws_rds_cluster.aurora).endpoint
+  ) : (
+    one(aws_db_proxy.postgres_proxy).endpoint 
+  )
 }
 
-#non-prod instances are not using replica so output will be empty
 output "db_reader_endpoint" {
-  value = var.db_engine == "aurora" ? aws_rds_cluster.aurora[0].reader_endpoint : null
+  description = "Read-only endpoint, null if not available"
+  value = var.db_engine == "aurora" ? (
+    one(aws_rds_cluster.aurora).reader_endpoint
+  ) : null
 }
