@@ -6,9 +6,9 @@ data "aws_secretsmanager_secret" "db_secret" {
   name = "/${var.environment}/app-1/"
 }
 
-data "aws_db_subnet_group" "selected" {
-  name = var.subnet_group_name
-}
+# data "aws_db_subnet_group" "selected" {
+#   name = var.subnet_group_name
+# }
 
 
 ###################################################################
@@ -161,7 +161,7 @@ resource "aws_db_proxy" "postgres_proxy" {
   require_tls            = true
   role_arn               = aws_iam_role.proxy_role[0].arn # IAM role allowing Secrets Manager access
   vpc_security_group_ids = var.security_group_ids
-  vpc_subnet_ids         = data.aws_db_subnet_group.selected.subnet_ids # Ensure these are in the same VPC
+  vpc_subnet_ids         = var.private_subnet_ids
 
   auth {
     auth_scheme = "SECRETS"
@@ -188,4 +188,14 @@ resource "aws_db_proxy_target" "postgres_target" {
   db_instance_identifier = aws_db_instance.postgres[0].identifier
   db_proxy_name          = aws_db_proxy.postgres_proxy[0].name
   target_group_name      = aws_db_proxy_default_target_group.postgres_target_group[0].name
+}
+
+resource "aws_db_subnet_group" "selected" {
+  count      = var.db_engine == "rds" ? 1 : 0
+  name       = var.subnet_group_name
+  subnet_ids = var.private_subnet_ids
+  tags = {
+    Name = "incode-db-${var.environment}-subnet-group"
+    env  = var.environment
+  }
 }

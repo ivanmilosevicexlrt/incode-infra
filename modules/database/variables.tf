@@ -41,6 +41,11 @@ variable "subnet_group_name" {
   type        = string
 }
 
+variable "private_subnet_ids" {
+  description = "List of private subnet IDs for the DB subnet group"
+  type        = list(string)
+}
+
 variable "security_group_ids" {
   description = "Security groups allowed to connect (e.g., EKS SG)"
   type        = list(string)
