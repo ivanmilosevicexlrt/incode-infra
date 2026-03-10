@@ -107,7 +107,7 @@ resource "helm_release" "fluent_bit" {
         [OUTPUT]
             Name              cloudwatch_logs
             Match             *
-            region            us-east-1
+            region            ${data.aws_region.current.name}
             log_group_name    /eks/${var.cluster_name}
             log_stream_prefix fluent-bit-
             auto_create_group true
