@@ -155,7 +155,7 @@ resource "aws_db_subnet_group" "this" {
 }
 
 resource "aws_subnet" "monitoring" {
-  count             = var.enable_monitoring ? var.az_count : 0
+  count             = var.monitoring_enabled ? var.az_count : 0
   vpc_id            = aws_vpc.this.id
   cidr_block        = cidrsubnet(var.vpc_cidr, 8, count.index + 20)
   availability_zone = data.aws_availability_zones.available.names[count.index]

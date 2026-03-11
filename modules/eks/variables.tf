@@ -68,6 +68,17 @@ variable "node_instance_type" {
   }
 }
 
+variable "monitoring_enabled" {
+  description = "Whether to create a separate node group for monitoring"
+  type        = bool
+  default     = false  
+}
+
+variable "monitoring_subnets" {
+  type    = list(string)
+  default = []
+}
+
 ########EKS#ACCESS#######
 
 # variable "account_id" {

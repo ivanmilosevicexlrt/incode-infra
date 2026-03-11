@@ -16,6 +16,9 @@ output "db_subnet_group" {
   value       = aws_db_subnet_group.this.name
 }
 
+output "monitoring_enabled" {
+  value = var.monitoring_enabled
+}
 output "monitoring_subnets" {
   value = aws_subnet.monitoring[*].id
 }

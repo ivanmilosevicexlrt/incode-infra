@@ -103,11 +103,40 @@ resource "aws_eks_node_group" "default" {
   ]
 }
 
-resource "aws_eks_addon" "coredns" {
-  cluster_name                = aws_eks_cluster.this.name
-  addon_name                  = "coredns"
-  resolve_conflicts_on_create = "OVERWRITE"
-  depends_on                  = [aws_eks_node_group.default]
+resource "aws_eks_node_group" "monitoring" {
+  count           = var.monitoring_enabled ? 1 : 0
+  cluster_name    = aws_eks_cluster.this.name
+  node_role_arn   = aws_iam_role.eks_nodes.arn
+  subnet_ids      = var.monitoring_subnets
+  node_group_name = "${var.name}-monitoring"
+  capacity_type   = "ON_DEMAND"
+
+  scaling_config {
+    desired_size = 2
+    max_size     = 4
+    min_size     = 1
+  }
+
+  launch_template {
+    name    = aws_launch_template.eks_nodes.name
+    version = aws_launch_template.eks_nodes.latest_version
+  }
+
+  taint {
+    key    = "dedicated"
+    value  = "monitoring"
+    effect = "NO_SCHEDULE"
+  }
+
+  labels = {
+    dedicated = "monitoring"
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.eks_nodes_AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.eks_nodes_AmazonEC2ContainerRegistryReadOnly,
+    aws_iam_role_policy_attachment.eks_node_AmazonEKS_CNI_Policy,
+  ]
 }
 
 resource "aws_eks_addon" "kube_proxy" {

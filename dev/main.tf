@@ -4,7 +4,7 @@ module "vpc" {
   name              = "dev"
   vpc_cidr          = "10.2.0.0/16"
   az_count          = 2
-  enable_monitoring = false
+  monitoring_enabled = false
   enable_nat        = true
 }
 
@@ -16,7 +16,10 @@ module "eks" {
   node_min_size      = 1
   node_max_size      = 2
   node_instance_type = "t3.medium"
-}
+  monitoring_enabled = module.vpc.monitoring_enabled
+  monitoring_subnets = module.vpc.monitoring_subnets
+
+  }
 
 module "database" {
   source             = "../modules/database"

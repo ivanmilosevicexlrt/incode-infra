@@ -20,7 +20,7 @@ variable "az_count" {
   }
 }
 
-variable "enable_monitoring" {
+variable "monitoring_enabled" {
   description = "Whether to create monitoring subnets"
   type        = bool
   default     = false
