@@ -14,6 +14,11 @@ variable "deletion_protection" {
   default     = true
 }
 
+variable "vpc_cidr" {
+  description = "CIDR block of the VPC where the EKS cluster resides"
+  type        = string
+}
+
 variable "subnet_ids" {
   description = "List of subnet IDs for EKS"
   type        = list(string)

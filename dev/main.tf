@@ -4,7 +4,7 @@ module "vpc" {
   name              = "dev"
   vpc_cidr          = "10.2.0.0/16"
   az_count          = 2
-  monitoring_enabled = false
+  monitoring_enabled = true
   enable_nat        = true
 }
 
@@ -12,10 +12,11 @@ module "eks" {
   source             = "../modules/eks"
   name               = "dev-eks"
   subnet_ids         = module.vpc.app_subnets
+  vpc_cidr           = module.vpc.vpc_cidr
   node_desired_size  = 1
   node_min_size      = 1
   node_max_size      = 2
-  node_instance_type = "t3.medium"
+  node_instance_type = "m4.large"
   monitoring_enabled = module.vpc.monitoring_enabled
   monitoring_subnets = module.vpc.monitoring_subnets
 

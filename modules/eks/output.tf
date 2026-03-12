@@ -37,6 +37,9 @@ output "karpenter_role_arn" {
 
 
 output "cluster_ca_data" {
-  #value = module.eks.cluster_certificate_authority_data  # was 
-  value= aws_eks_cluster.this.certificate_authority[0].data
+   value= aws_eks_cluster.this.certificate_authority[0].data
+}
+
+output "name" {
+  value = var.vpc_cidr
 }

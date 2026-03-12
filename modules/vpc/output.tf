@@ -11,6 +11,10 @@ output "db_subnets" {
   value = aws_subnet.db[*].id
 }
 
+output "vpc_cidr" {
+  value = var.vpc_cidr
+}
+
 output "db_subnet_group" {
   description = "Name of the DB subnet group for RDS"
   value       = aws_db_subnet_group.this.name
